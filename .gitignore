@@ -1,0 +1,6 @@
+GPATH
+GRTAGS
+GTAGS
+*.o
+*.a
+rot13d

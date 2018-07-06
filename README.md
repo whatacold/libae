@@ -1,12 +1,12 @@
-# libae，redis的网络库
+# libae, the simple network library extracted from `Redis`
 
-## 文件说明
+## Source files
 
-- `ae*.[ch]`源自redis 4.0.1发行源码，只字未动。
-- `config.h`ae依赖，简单地选择使用epoll作为后端。
-- `zmalloc.h`ae依赖的动态内存分配和释放函数，直接使用C库的。
-- `rot13d.c`demo程序，模仿[libevent book ROT13服务器](http://www.wangafu.net/~nickm/libevent-book/01_intro.html)。
+- `ae*.[ch]`, extracted from `Redis` 4.0.1 release without any changes.
+- `config.h`, compilation config macro for libae.
+- `zmalloc.h`, definitions for memory management functions: `zmalloc`, `zrealloc`, `zcalloc` and `zfree`.
+- `rot13d.c`, an example of ROT13 server, modified from [ROT13 server in libevent book](http://www.wangafu.net/~nickm/libevent-book/01_intro.html)。
 
-## 接口文档
+## Library Documentation
 
 - [Redis Event Library – Redis](https://redis.io/topics/internals-rediseventlib)

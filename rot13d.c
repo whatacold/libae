@@ -22,9 +22,8 @@ struct fd_state
     int fd;
     char buffer[MAX_LINE];
 
-    // 命名以此buffer作为宾语
-    size_t write_to;      // where of the buffer to write next time，用于往buffer写
-    size_t read_from;     // buffer[read_from] ... buffer[read_upto - 1] is the data to be sent out.用于从buffer读
+    size_t write_to;      // where of the buffer to write next time
+    size_t read_from;     // buffer[read_from] ... buffer[read_upto - 1] is the data to be sent out.
     size_t read_upto;
 };
 
@@ -97,7 +96,7 @@ connWriteProc(struct aeEventLoop *eventLoop, int fd, void *clientData, int mask)
     while(state->read_from < state->read_upto) {
         ssize_t result = send(fd, state->buffer + state->read_from, state->read_upto - state->read_from, 0);
         if(result < 0) {
-            if(errno == EAGAIN)  {    // XXX use evutil macro
+            if(errno == EAGAIN)  {
                 return;
             }
             free_fd_state(state);
@@ -114,7 +113,7 @@ connWriteProc(struct aeEventLoop *eventLoop, int fd, void *clientData, int mask)
         state->write_to = 0;
     }
 
-    aeDeleteFileEvent(eventLoop, fd, AE_WRITABLE); // 写事件由读事件引发的，有数据待发时才要注册此事件
+    aeDeleteFileEvent(eventLoop, fd, AE_WRITABLE);
 }
 
 void
@@ -139,21 +138,21 @@ connReadProc(struct aeEventLoop *eventLoop, int fd, void *clientData, int mask)
 
             if(buf[i] == '\n') {
                 state->read_upto = state->write_to;
-                aeCreateFileEvent(eventLoop, fd, AE_WRITABLE, connWriteProc, state); // 把数据及时送回去
+                aeCreateFileEvent(eventLoop, fd, AE_WRITABLE, connWriteProc, state); // send data out in time
             }
         }
     }
 
     if(result == 0) {
-        if(state->read_from == state->read_upto) // 不能立即释放，得等没有待写的数据时再释放
+        if(state->read_from == state->read_upto) // don't free it until there is nothing needs to write
         {
             free_fd_state(state);
             close(fd);
         }
     } else if(result < 0) {
-        if(errno == EAGAIN)     // XXX use evutil macro
+        if(errno == EAGAIN)
         {
-            return; // 这一次的读事件处理完了
+            return;
         }
         perror("recv");
         free_fd_state(state);
@@ -209,7 +208,6 @@ run(void)
 
     listener = socket(AF_INET, SOCK_STREAM, 0);
 
-    // make it nonblocking
     set_nonblocking(listener);
 
     int one = 1;
